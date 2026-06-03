@@ -2,10 +2,8 @@ import psutil
 import socket
 
 TOTAL_CPU = psutil.cpu_count()
-# INTERNAL_HOST = "www.graid.com"
-# INTERNAL_PORT = 80
-INTERNAL_HOST = "10.10.0.3"
-INTERNAL_PORT = 22
+INTERNAL_HOST = "www.graid.com"
+INTERNAL_PORT = 80
 EXTERNAL_HOST = "8.8.8.8"
 EXTERNAL_PORT = 53
 TIMEOUT = 3

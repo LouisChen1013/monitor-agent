@@ -1,0 +1,6 @@
+monitor_dir: "/opt/monitor"
+monitor_os_packages:
+  Debian:
+    - python3-venv
+  RedHat:
+    - python3-devel

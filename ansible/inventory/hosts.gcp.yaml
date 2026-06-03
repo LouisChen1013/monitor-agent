@@ -1,0 +1,14 @@
+plugin: google.cloud.gcp_compute
+projects:
+  - bat-minidmp
+  # - your_project_name
+auth_kind: serviceaccount
+service_account_file: "./service-account.json"
+# service_account_file: "your_file_path"
+
+filters:
+  - status = RUNNING
+  - labels.managed_by = terraform
+
+groups:
+  monitored_servers: true

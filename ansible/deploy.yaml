@@ -1,0 +1,57 @@
+- name: Deploy Monitoring Agent
+  hosts: monitored_servers
+  become: true
+  tasks:
+    - name: Make monitor dir if not exist
+      ansible.builtin.file:
+        path: "{{ monitor_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Install OS package dependencies
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: present
+        update_cache: true
+      loop: "{{ monitor_os_packages[ansible_os_family] }}"
+      when: ansible_os_family in monitor_os_packages
+
+    - name: Copy files to monitor dir
+      ansible.builtin.copy:
+        src: "files/{{ item }}"
+        dest: "{{ monitor_dir }}"
+        owner: root
+        group: root
+        mode: "0644"
+      loop:
+        - agent.py
+        - collectors.py
+        - aggregator.py
+        - logger.py
+        - requirements.txt
+      notify: Restart monitor agent
+
+    - name: Create venv and install requirements.txt
+      ansible.builtin.pip:
+        requirements: "{{ monitor_dir }}/requirements.txt"
+        virtualenv: "{{ monitor_dir }}/venv"
+        virtualenv_command: /usr/bin/python3 -m venv
+      notify: Restart monitor agent
+
+    - name: Copy service file
+      ansible.builtin.copy:
+        src: files/monitor-agent.service
+        dest: /etc/systemd/system/
+        owner: root
+        group: root
+        mode: "0644"
+
+  handlers:
+    - name: Restart monitor agent
+      ansible.builtin.systemd:
+        name: monitor-agent
+        state: restarted
+        enabled: true
+        daemon_reload: true

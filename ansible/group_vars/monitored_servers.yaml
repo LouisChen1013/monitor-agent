@@ -2,5 +2,7 @@ monitor_dir: "/opt/monitor"
 monitor_os_packages:
   Debian:
     - python3-venv
+    - iputils-ping
   RedHat:
     - python3-devel
+    - iputils

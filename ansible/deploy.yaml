@@ -47,6 +47,7 @@
         owner: root
         group: root
         mode: "0644"
+      notify: Restart monitor agent
 
   handlers:
     - name: Restart monitor agent

@@ -1,12 +1,13 @@
-import psutil
 import socket
+import subprocess
+import psutil
 
 TOTAL_CPU = psutil.cpu_count()
 INTERNAL_HOST = "www.graid.com"
 INTERNAL_PORT = 80
 EXTERNAL_HOST = "8.8.8.8"
-EXTERNAL_PORT = 53
 TIMEOUT = 3
+ICMP_COUNT = 1
 
 
 def collect_cpu():
@@ -67,11 +68,26 @@ def check_tcp(host, port, timeout=3):
         s.close()
 
 
+def check_icmp(host, count=1, timeout=1):
+    """Check network connectivity via ICMP Ping."""
+    command = ["ping", "-c", str(count), "-W", str(timeout), host]
+
+    try:
+        subprocess.run(
+            command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True
+        )
+        return {"status": "SUCCESS", "error": None}
+    except subprocess.CalledProcessError:
+        return {"status": "FAILED", "error": "ICMP Ping failed or timeout"}
+    except Exception as e:
+        return {"status": "FAILED", "error": f"OS Error: {str(e)}"}
+
+
 def check_internal_network(host=INTERNAL_HOST, port=INTERNAL_PORT, timeout=TIMEOUT):
     """Check internal network connectivity."""
     return check_tcp(host, port, timeout)
 
 
-def check_external_network(host=EXTERNAL_HOST, port=EXTERNAL_PORT, timeout=TIMEOUT):
+def check_external_network(host=EXTERNAL_HOST, count=ICMP_COUNT, timeout=TIMEOUT):
     """Check external network connectivity."""
-    return check_tcp(host, port, timeout)
+    return check_icmp(host, count, timeout)

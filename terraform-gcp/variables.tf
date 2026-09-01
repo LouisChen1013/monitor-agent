@@ -36,18 +36,26 @@ variable "instance_max" {
 variable "instances" {
   description = "instance"
   type        = map(string)
+
+  validation {
+    condition     = contains(keys(var.instances), "central")
+    error_message = "Deployment failed: instances must include a central instance as the external entry point."
+  }
+
   validation {
     condition     = length(var.instances) <= var.instance_max
     error_message = "Deployment failed: You have exceeded the maximum allowed instance limit."
   }
+
   validation {
     condition = alltrue([
       for _, os in var.instances : contains([
         "ubuntu-os-cloud/ubuntu-2604-lts-amd64",
-        "debian-cloud/debian-12"
+        "rhel-cloud/rhel-8",
+        "windows-cloud/windows-2022"
       ], os)
     ])
-    error_message = "Deployment failed: Only Ubuntu (ubuntu-2604-lts) and Debian (debian-12) OS images are allowed."
+    error_message = "Deployment failed: Only Ubuntu (ubuntu-2604-lts), Red Hat Enterprise Linux 8, and Windows Server 2022 OS images are allowed."
   }
 }
 

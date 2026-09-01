@@ -1,0 +1,29 @@
+plugin: aws_ec2
+regions:
+  - ap-east-2
+
+hostvars_prefix: aws_
+
+# Only include Terraform-managed running instances.
+filters:
+  tag:ManagedBy: terraform
+  instance-state-name: running
+
+# Ansible inventory 裡面「這台機器叫什麼名字」
+hostnames:
+  - tag:Name
+  - private-ip-address
+
+# Connect to instances by public IP.
+compose:
+  ansible_host: aws_public_ip_address
+
+# 建立 Ansible Group
+groups:
+  # Add every filtered EC2 instance to this group.
+  monitored_servers: true
+
+# [monitored_servers]
+# central
+# backend
+# frontend

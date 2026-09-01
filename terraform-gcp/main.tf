@@ -16,6 +16,7 @@ resource "google_compute_subnetwork" "subnet" {
 resource "google_compute_firewall" "allow_ssh" {
   name    = "allow-ssh"
   network = google_compute_network.vpc.name
+
   allow {
     protocol = "tcp"
     ports    = ["22"]
@@ -45,7 +46,7 @@ resource "google_compute_instance" "monitor_vm" {
   network_interface {
     subnetwork = google_compute_subnetwork.subnet.name
 
-    # Allocate an ephemeral external IP automatically by leaving access_config empty
+    # Allocate an ephemeral external IP automatically.
     access_config {
     }
   }

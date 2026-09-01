@@ -1,8 +1,12 @@
 monitor_dir: "/opt/monitor"
+ansible_user: ec2-user
+ansible_python_interpreter: /usr/bin/python3.12
+
 monitor_os_packages:
   Debian:
     - python3-venv
     - iputils-ping
   RedHat:
-    - python3-devel
+    - python3.12-devel
+    - python3.12-pip
     - iputils

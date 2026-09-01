@@ -10,13 +10,35 @@
         group: root
         mode: "0755"
 
-    - name: Install OS package dependencies
-      ansible.builtin.package:
-        name: "{{ item }}"
-        state: present
-        update_cache: true
-      loop: "{{ monitor_os_packages[ansible_os_family] }}"
-      when: ansible_os_family in monitor_os_packages
+    - name: Install RedHat package dependencies
+      ansible.builtin.command:
+        argv:
+          - dnf
+          - install
+          - -y
+          - "{{ item }}"
+      loop: "{{ monitor_os_packages.RedHat }}"
+      changed_when: false
+      when: ansible_os_family == "RedHat"
+
+    - name: Update Debian package cache
+      ansible.builtin.command:
+        argv:
+          - apt-get
+          - update
+      changed_when: false
+      when: ansible_os_family == "Debian"
+
+    - name: Install Debian package dependencies
+      ansible.builtin.command:
+        argv:
+          - apt-get
+          - install
+          - -y
+          - "{{ item }}"
+      loop: "{{ monitor_os_packages.Debian }}"
+      changed_when: false
+      when: ansible_os_family == "Debian"
 
     - name: Copy files to monitor dir
       ansible.builtin.copy:
@@ -37,7 +59,7 @@
       ansible.builtin.pip:
         requirements: "{{ monitor_dir }}/requirements.txt"
         virtualenv: "{{ monitor_dir }}/venv"
-        virtualenv_command: /usr/bin/python3 -m venv
+        virtualenv_command: "{{ ansible_python_interpreter }} -m venv"
       notify: Restart monitor agent
 
     - name: Copy service file

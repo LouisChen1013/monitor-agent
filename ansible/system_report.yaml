@@ -1,0 +1,12 @@
+- name: Report host system information
+  hosts: monitored_servers
+  gather_facts: true
+  tasks:
+    - name: Show system report
+      ansible.builtin.debug:
+        msg:
+          - "Host: {{ inventory_hostname }}"
+          - "OS: {{ ansible_distribution }} {{ ansible_distribution_version }}"
+          - "CPU cores: {{ ansible_processor_vcpus }}"
+          - "RAM: {{ ansible_memtotal_mb }} MB"
+          - "Disk: {{ ansible_mounts[0].size_total // 1024 // 1024 // 1024 }} GB"

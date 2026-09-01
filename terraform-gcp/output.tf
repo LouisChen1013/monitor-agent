@@ -7,7 +7,7 @@ output "vm_public_ip" {
 }
 
 output "vm_private_ip" {
-  description = "VM Private IP"
+  description = "Private IPs of all instances."
   value = {
     for name, instance in google_compute_instance.monitor_vm :
     name => instance.network_interface[0].network_ip
